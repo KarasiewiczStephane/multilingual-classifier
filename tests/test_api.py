@@ -34,6 +34,7 @@ def _reset_globals():
     app_module._lang_detector = None
     app_module._template_engine = None
     app_module._preprocessor = None
+    app_module._metrics_db = None
     app_module._model_loaded = False
     yield
 
@@ -196,3 +197,62 @@ class TestBatchEndpoint:
         """Empty batch should be rejected."""
         response = client.post("/classify/batch", json={"tickets": []})
         assert response.status_code == 422
+
+
+class TestMetricsEndpoint:
+    """Tests for the /metrics endpoint."""
+
+    def test_metrics_empty_db(self, client: TestClient, tmp_path) -> None:
+        """Metrics on empty DB should return valid response."""
+        import src.api.app as app_module
+        from src.utils.database import MetricsDatabase
+
+        app_module._metrics_db = MetricsDatabase(
+            db_path=str(tmp_path / "test_metrics.db")
+        )
+        response = client.get("/metrics")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total_classifications"] == 0
+        assert data["per_language"] == []
+        assert data["per_intent"] == []
+        assert "latency" in data
+        assert "model_info" in data
+
+    def test_metrics_with_data(self, client: TestClient, tmp_path) -> None:
+        """Metrics with data should return populated stats."""
+        import src.api.app as app_module
+        from src.utils.database import MetricsDatabase
+
+        db = MetricsDatabase(db_path=str(tmp_path / "test_metrics.db"))
+        db.log_classification(
+            text="test",
+            language="en",
+            primary_intent="billing",
+            confidence=0.85,
+            urgency="low",
+            was_escalated=False,
+            needs_review=False,
+            processing_time_ms=42.0,
+        )
+        app_module._metrics_db = db
+
+        response = client.get("/metrics")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total_classifications"] == 1
+        assert len(data["per_language"]) == 1
+        assert data["per_language"][0]["language"] == "en"
+
+    def test_metrics_has_model_info(self, client: TestClient, tmp_path) -> None:
+        """Metrics should include model info."""
+        import src.api.app as app_module
+        from src.utils.database import MetricsDatabase
+
+        app_module._metrics_db = MetricsDatabase(
+            db_path=str(tmp_path / "test_metrics.db")
+        )
+        response = client.get("/metrics")
+        data = response.json()
+        assert "model_name" in data["model_info"]
+        assert "intent_categories" in data["model_info"]

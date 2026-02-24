@@ -74,3 +74,43 @@ class HealthResponse(BaseModel):
     status: str
     model_loaded: bool
     version: str
+
+
+class LanguageMetrics(BaseModel):
+    """Per-language classification statistics."""
+
+    language: str
+    total_classifications: int
+    avg_confidence: float
+    review_rate: float
+    escalation_rate: float
+
+
+class LatencyMetrics(BaseModel):
+    """Processing latency statistics."""
+
+    mean_ms: float
+    min_ms: float
+    max_ms: float
+    p50_ms: Optional[float] = None
+    p95_ms: Optional[float] = None
+    p99_ms: Optional[float] = None
+
+
+class IntentMetrics(BaseModel):
+    """Per-intent classification statistics."""
+
+    intent: str
+    count: int
+    avg_confidence: float
+
+
+class MetricsResponse(BaseModel):
+    """Full metrics response including all statistics."""
+
+    timestamp: str
+    total_classifications: int
+    per_language: list[LanguageMetrics]
+    per_intent: list[IntentMetrics]
+    latency: LatencyMetrics
+    model_info: dict

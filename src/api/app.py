@@ -18,8 +18,12 @@ from src.api.schemas import (
     ClassifyRequest,
     ClassifyResponse,
     HealthResponse,
+    IntentMetrics,
     IntentResult,
     LanguageInfo,
+    LanguageMetrics,
+    LatencyMetrics,
+    MetricsResponse,
     UrgencyLevel,
 )
 from src.data.preprocessor import TextPreprocessor
@@ -27,6 +31,7 @@ from src.models.language_detector import LanguageDetector
 from src.models.urgency_scorer import UrgencyScorer
 from src.responses.template_engine import ResponseTemplateEngine
 from src.utils.config import load_config
+from src.utils.database import MetricsDatabase
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +40,7 @@ _urgency_scorer = None
 _lang_detector = None
 _template_engine = None
 _preprocessor = None
+_metrics_db = None
 _model_loaded = False
 
 
@@ -265,4 +271,57 @@ async def health_check() -> HealthResponse:
         status="healthy",
         model_loaded=_model_loaded,
         version="1.0.0",
+    )
+
+
+def _get_metrics_db() -> MetricsDatabase:
+    """Get or create the metrics database instance."""
+    global _metrics_db
+    if _metrics_db is None:
+        _metrics_db = MetricsDatabase()
+    return _metrics_db
+
+
+@app.get("/metrics", response_model=MetricsResponse)
+async def get_metrics() -> MetricsResponse:
+    """Get classification metrics and statistics from the database."""
+    from datetime import datetime, timezone
+
+    config = load_config()
+    db = _get_metrics_db()
+
+    lang_stats = db.get_accuracy_by_language()
+    per_language = [
+        LanguageMetrics(
+            language=lang,
+            total_classifications=stats["total"],
+            avg_confidence=stats["avg_confidence"],
+            review_rate=stats["review_count"] / max(stats["total"], 1),
+            escalation_rate=stats["escalation_count"] / max(stats["total"], 1),
+        )
+        for lang, stats in lang_stats.items()
+    ]
+
+    intent_stats = db.get_intent_distribution()
+    per_intent = [
+        IntentMetrics(
+            intent=intent,
+            count=stats["count"],
+            avg_confidence=stats["avg_confidence"],
+        )
+        for intent, stats in intent_stats.items()
+    ]
+
+    latency_stats = db.get_latency_stats()
+
+    return MetricsResponse(
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        total_classifications=db.get_total_classifications(),
+        per_language=per_language,
+        per_intent=per_intent,
+        latency=LatencyMetrics(**latency_stats),
+        model_info={
+            "model_name": config.model.zero_shot_model,
+            "intent_categories": config.classification.intent_categories,
+        },
     )
