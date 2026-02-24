@@ -1,0 +1,29 @@
+# Core ML
+transformers>=4.36.0
+torch>=2.0.0
+datasets>=2.16.0
+scikit-learn>=1.4.0
+pandas>=2.1.0
+numpy>=1.26.0
+
+# NLP
+langdetect>=1.0.9
+fasttext-langdetect>=1.0.0
+
+# API
+fastapi>=0.109.0
+uvicorn>=0.27.0
+httpx>=0.26.0
+
+# Config & Utils
+pyyaml>=6.0
+pydantic>=2.0
+pydantic-settings>=2.0
+python-dotenv>=1.0
+
+# Dev
+pytest>=7.0
+pytest-cov>=4.0
+pytest-asyncio>=0.23.0
+ruff>=0.1
+pre-commit>=3.0

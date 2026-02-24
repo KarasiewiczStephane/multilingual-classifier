@@ -1,0 +1,75 @@
+model:
+  zero_shot_model: "facebook/bart-large-mnli"
+  device: "auto"
+  max_length: 512
+
+classification:
+  intent_categories:
+    - billing
+    - technical_support
+    - account
+    - general_inquiry
+    - complaint
+    - feedback
+  confidence_threshold: 0.7
+  escalation_threshold: 0.8
+
+urgency:
+  levels:
+    - low
+    - medium
+    - high
+    - critical
+  keywords:
+    critical:
+      - urgent
+      - emergency
+      - down
+      - broken
+      - asap
+    high:
+      - important
+      - immediately
+      - help
+    medium:
+      - question
+      - how to
+      - need
+      - want
+      - would like
+  escalation_threshold: 0.8
+
+languages:
+  supported:
+    - en
+    - es
+    - fr
+    - de
+    - pt
+    - it
+    - nl
+    - pl
+    - ru
+    - zh
+    - ja
+    - ko
+    - ar
+    - hi
+    - th
+    - vi
+    - id
+    - tr
+    - sv
+    - da
+
+api:
+  batch_size: 100
+  host: "0.0.0.0"
+  port: 8000
+
+database:
+  path: "data/metrics.db"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
