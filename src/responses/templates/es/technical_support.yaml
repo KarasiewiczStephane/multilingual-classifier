@@ -1,0 +1,26 @@
+technical_support:
+  default:
+    subject: "Re: Su solicitud de soporte técnico"
+    body: |
+      Estimado/a {customer_name},
+
+      Gracias por contactarnos sobre su problema técnico.
+      Su ticket #{ticket_id} ha sido registrado.
+
+      Nuestro equipo técnico investigará y le dará seguimiento dentro de 24 horas.
+
+      Atentamente,
+      Equipo de Soporte Técnico
+
+  high_urgency:
+    subject: "[URGENTE] Re: Problema técnico reportado"
+    body: |
+      Estimado/a {customer_name},
+
+      Hemos recibido su reporte técnico urgente (#{ticket_id}).
+      Nuestro equipo de ingeniería ha sido notificado y está investigando.
+
+      Recibirá una actualización dentro de 1 hora.
+
+      Atentamente,
+      Equipo de Soporte Técnico

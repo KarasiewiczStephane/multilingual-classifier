@@ -1,0 +1,26 @@
+technical_support:
+  default:
+    subject: "Re: Your technical support request"
+    body: |
+      Dear {customer_name},
+
+      Thank you for reaching out about your technical issue.
+      Your ticket #{ticket_id} has been logged.
+
+      Our technical team will investigate and follow up within 24 hours.
+
+      Best regards,
+      Technical Support Team
+
+  high_urgency:
+    subject: "[URGENT] Re: Technical issue reported"
+    body: |
+      Dear {customer_name},
+
+      We have received your urgent technical report (#{ticket_id}).
+      Our engineering team has been notified and is investigating.
+
+      You will receive an update within 1 hour.
+
+      Best regards,
+      Technical Support Team

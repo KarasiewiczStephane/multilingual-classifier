@@ -1,0 +1,26 @@
+billing:
+  default:
+    subject: "Re: Your billing inquiry"
+    body: |
+      Dear {customer_name},
+
+      Thank you for contacting us about your billing concern.
+      Your ticket #{ticket_id} has been received.
+
+      We will review your account and respond within 24 hours.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "[URGENT] Re: Your billing inquiry"
+    body: |
+      Dear {customer_name},
+
+      We understand this is urgent. Your case #{ticket_id}
+      has been escalated to our priority team.
+
+      Someone will contact you within 2 hours.
+
+      Best regards,
+      Customer Support Team

@@ -1,0 +1,26 @@
+billing:
+  default:
+    subject: "Re: Su consulta de facturación"
+    body: |
+      Estimado/a {customer_name},
+
+      Gracias por contactarnos sobre su consulta de facturación.
+      Su ticket #{ticket_id} ha sido recibido.
+
+      Revisaremos su cuenta y responderemos dentro de 24 horas.
+
+      Atentamente,
+      Equipo de Soporte al Cliente
+
+  high_urgency:
+    subject: "[URGENTE] Re: Su consulta de facturación"
+    body: |
+      Estimado/a {customer_name},
+
+      Entendemos que esto es urgente. Su caso #{ticket_id}
+      ha sido escalado a nuestro equipo prioritario.
+
+      Alguien se pondrá en contacto con usted dentro de 2 horas.
+
+      Atentamente,
+      Equipo de Soporte al Cliente

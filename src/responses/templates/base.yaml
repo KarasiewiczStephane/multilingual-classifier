@@ -1,0 +1,24 @@
+fallback:
+  default:
+    subject: "Re: Your support request"
+    body: |
+      Dear {customer_name},
+
+      Thank you for contacting us. Your ticket #{ticket_id} has been received.
+      We will review your request and respond as soon as possible.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "[PRIORITY] Re: Your support request"
+    body: |
+      Dear {customer_name},
+
+      We understand your request is urgent. Your case #{ticket_id}
+      has been flagged for priority handling.
+
+      Our team will respond within 2 hours.
+
+      Best regards,
+      Customer Support Team

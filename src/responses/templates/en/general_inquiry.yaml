@@ -1,0 +1,22 @@
+general_inquiry:
+  default:
+    subject: "Re: Your inquiry"
+    body: |
+      Dear {customer_name},
+
+      Thank you for reaching out. Your inquiry (#{ticket_id}) has been received.
+      We will get back to you as soon as possible.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "[PRIORITY] Re: Your inquiry"
+    body: |
+      Dear {customer_name},
+
+      Your inquiry (#{ticket_id}) has been marked as priority.
+      We will respond within 2 hours.
+
+      Best regards,
+      Customer Support Team

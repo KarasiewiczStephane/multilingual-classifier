@@ -1,0 +1,26 @@
+technical_support:
+  default:
+    subject: "Re: Votre demande de support technique"
+    body: |
+      Cher/Chère {customer_name},
+
+      Merci de nous avoir contactés concernant votre problème technique.
+      Votre ticket #{ticket_id} a été enregistré.
+
+      Notre équipe technique enquêtera et vous tiendra informé sous 24 heures.
+
+      Cordialement,
+      Équipe de Support Technique
+
+  high_urgency:
+    subject: "[URGENT] Re: Problème technique signalé"
+    body: |
+      Cher/Chère {customer_name},
+
+      Nous avons reçu votre signalement technique urgent (#{ticket_id}).
+      Notre équipe d'ingénierie a été alertée et enquête actuellement.
+
+      Vous recevrez une mise à jour sous 1 heure.
+
+      Cordialement,
+      Équipe de Support Technique

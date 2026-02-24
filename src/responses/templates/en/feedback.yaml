@@ -1,0 +1,23 @@
+feedback:
+  default:
+    subject: "Re: Thank you for your feedback"
+    body: |
+      Dear {customer_name},
+
+      Thank you for sharing your feedback (#{ticket_id}).
+      We appreciate hearing from our customers and your input
+      helps us improve our services.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "Re: Thank you for your feedback"
+    body: |
+      Dear {customer_name},
+
+      Thank you for your feedback (#{ticket_id}).
+      We have noted your comments and will follow up shortly.
+
+      Best regards,
+      Customer Support Team

@@ -1,0 +1,26 @@
+complaint:
+  default:
+    subject: "Re: Your complaint"
+    body: |
+      Dear {customer_name},
+
+      We are sorry to hear about your experience. Your complaint
+      (#{ticket_id}) has been recorded and will be reviewed.
+
+      We take all feedback seriously and will respond within 24 hours.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "[URGENT] Re: Your complaint"
+    body: |
+      Dear {customer_name},
+
+      We sincerely apologize for the inconvenience. Your complaint
+      (#{ticket_id}) has been escalated to our management team.
+
+      You will hear from us within 2 hours.
+
+      Best regards,
+      Customer Support Team

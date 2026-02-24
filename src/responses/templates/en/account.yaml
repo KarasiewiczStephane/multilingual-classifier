@@ -1,0 +1,24 @@
+account:
+  default:
+    subject: "Re: Your account inquiry"
+    body: |
+      Dear {customer_name},
+
+      Thank you for contacting us about your account.
+      Your ticket #{ticket_id} has been received.
+
+      We will assist you with your account request within 24 hours.
+
+      Best regards,
+      Customer Support Team
+
+  high_urgency:
+    subject: "[PRIORITY] Re: Account issue"
+    body: |
+      Dear {customer_name},
+
+      Your account issue (#{ticket_id}) has been flagged as urgent.
+      Our account specialists will reach out to you within 2 hours.
+
+      Best regards,
+      Customer Support Team
