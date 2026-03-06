@@ -1,4 +1,4 @@
-.PHONY: install test lint clean run docker docker-build docker-run docker-compose
+.PHONY: install test lint clean run dashboard download-data docker docker-build docker-run docker-compose
 
 install:
 	pip install -r requirements.txt
@@ -17,6 +17,12 @@ clean:
 
 run:
 	python -m src.main
+
+dashboard:
+	streamlit run src/dashboard/app.py
+
+download-data:
+	python -c "from src.data.downloader import DatasetDownloader; DatasetDownloader().prepare_combined_dataset()"
 
 docker: docker-build docker-run
 

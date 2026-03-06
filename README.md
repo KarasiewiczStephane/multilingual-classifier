@@ -11,31 +11,38 @@
 - **Urgency scoring** using hybrid rule-based + ML approach with multilingual keywords
 - **Response suggestions** with per-language YAML template engine
 - **FastAPI service** with single and batch classification (up to 100 tickets)
+- **Streamlit dashboard** with classification demo, confidence charts, and per-language accuracy heatmap
 - **Per-language metrics** tracking via SQLite with `/metrics` endpoint
 - **Auto-escalation** for critical tickets with configurable thresholds
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        FastAPI Service                          │
-├─────────────────────────────────────────────────────────────────┤
-│  /classify  │  /classify/batch  │  /languages  │  /metrics     │
-└──────┬──────┴────────┬──────────┴───────┬──────┴───────┬───────┘
-       │               │                  │              │
-       ▼               ▼                  ▼              ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌─────────────┐
-│   Language   │ │  Zero-Shot   │ │   Urgency    │ │  Template   │
-│   Detector   │ │  Classifier  │ │   Scorer     │ │  Engine     │
-│ (langdetect  │ │(XLM-RoBERTa)│ │(Rules + ML)  │ │  (YAML)     │
-│ + fasttext)  │ │              │ │              │ │             │
-└──────────────┘ └──────────────┘ └──────────────┘ └─────────────┘
-                         │
-                         ▼
-              ┌──────────────────┐
-              │  SQLite Metrics  │
-              │    Database      │
-              └──────────────────┘
++-----------------------------------------------------------------+
+|                        FastAPI Service                           |
++-----------------------------------------------------------------+
+|  /classify  |  /classify/batch  |  /languages  |  /metrics      |
++------+------+--------+----------+-------+------+-------+--------+
+       |               |                  |              |
+       v               v                  v              v
++--------------+ +--------------+ +--------------+ +-------------+
+|   Language   | |  Zero-Shot   | |   Urgency    | |  Template   |
+|   Detector   | |  Classifier  | |   Scorer     | |  Engine     |
+| (langdetect  | |(XLM-RoBERTa)| |(Rules + ML)  | |  (YAML)     |
+| + fasttext)  | |              | |              | |             |
++--------------+ +--------------+ +--------------+ +-------------+
+                         |
+                         v
+              +------------------+
+              |  SQLite Metrics  |
+              |    Database      |
+              +------------------+
+
++-----------------------------------------------------------------+
+|                    Streamlit Dashboard                           |
++-----------------------------------------------------------------+
+|  Classification Demo  |  Confidence Chart  |  Accuracy Heatmap  |
++-----------------------------------------------------------------+
 ```
 
 ## Quick Start
@@ -45,11 +52,36 @@
 git clone git@github.com:KarasiewiczStephane/multilingual-classifier.git
 cd multilingual-classifier
 
-# Install
-pip install -r requirements.txt
+# Install dependencies
+make install
 
-# Run the API
+# (Optional) Download training data from HuggingFace
+make download-data
+
+# Run the API (serves on http://localhost:8000)
 make run
+
+# Launch the Streamlit dashboard (serves on http://localhost:8501)
+make dashboard
+```
+
+The dashboard runs standalone with synthetic data and does not require the API to be running. The API requires the XLM-RoBERTa model, which is downloaded automatically on first request.
+
+## Dashboard
+
+The Streamlit dashboard (`src/dashboard/app.py`) provides:
+
+- **Classification demo** -- enter text in any supported language and see predicted intent, confidence scores, detected language, and urgency level
+- **Confidence bar chart** -- horizontal bar chart of scores across all 6 intent categories
+- **Per-language accuracy heatmap** -- synthetic accuracy matrix across languages and intents
+- **Urgency gauge** -- visual indicator with color-coded urgency levels
+
+Launch with:
+
+```bash
+make dashboard
+# or directly:
+streamlit run src/dashboard/app.py
 ```
 
 ## API Usage
@@ -76,6 +108,12 @@ curl -X POST http://localhost:8000/classify/batch \
 curl http://localhost:8000/languages
 ```
 
+### Health check
+
+```bash
+curl http://localhost:8000/health
+```
+
 ### View metrics
 
 ```bash
@@ -95,7 +133,7 @@ make docker-compose
 ## Development
 
 ```bash
-# Install dev dependencies
+# Install dependencies
 make install
 
 # Run linter
@@ -110,13 +148,14 @@ make test
 ```
 multilingual-classifier/
 ├── src/
-│   ├── api/              # FastAPI endpoints and schemas
-│   ├── data/             # Data loading, preprocessing, splitting
-│   ├── models/           # Classifier, language detector, urgency scorer, evaluator
-│   ├── responses/        # Template engine and YAML templates
-│   └── utils/            # Config, logging, database
+│   ├── api/              # FastAPI endpoints and Pydantic schemas
+│   ├── dashboard/        # Streamlit dashboard (app.py)
+│   ├── data/             # Data downloader, preprocessing, splitting
+│   ├── models/           # Zero-shot classifier, language detector, urgency scorer
+│   ├── responses/        # Template engine and per-language YAML templates
+│   └── utils/            # Config loader, logger, database helpers
 ├── tests/                # Unit tests (168+ tests, >90% coverage)
-├── configs/              # YAML configuration
+├── configs/              # YAML configuration (config.yaml)
 ├── data/sample/          # Sample tickets (5 languages, 100 tickets)
 ├── .github/workflows/    # CI pipeline
 ├── Dockerfile            # Multi-stage Docker build
@@ -175,12 +214,12 @@ English, Spanish, French, German, Portuguese, Italian, Dutch, Polish, Russian, C
 
 All settings are in `configs/config.yaml`:
 
-- **Model**: Zero-shot model selection, device, max length
+- **Model**: Zero-shot model selection (`facebook/bart-large-mnli`), device, max length
 - **Classification**: Intent categories, confidence thresholds
 - **Urgency**: Keywords per level, escalation thresholds
-- **Languages**: Supported language list
-- **API**: Host, port, batch size
-- **Database**: SQLite path
+- **Languages**: Supported language list (20 languages)
+- **API**: Host, port, batch size limit
+- **Database**: SQLite path for metrics storage
 
 Environment variable overrides: `MODEL_DEVICE`, `LOG_LEVEL`, `API_HOST`, `API_PORT`, `DATABASE_PATH`
 
